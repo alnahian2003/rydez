@@ -22,6 +22,10 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $attributes = [
+        'name' => 'Guest User',
+    ];
+
     public function routeNotificationForTwilio()
     {
         return $this->phone;

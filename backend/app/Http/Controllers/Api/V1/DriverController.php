@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreDriverRequest;
-use App\Http\Requests\UpdateDriverRequest;
 use App\Models\Driver;
+use Illuminate\Http\Request;
 
 class DriverController extends Controller
 {
@@ -18,17 +17,9 @@ class DriverController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreDriverRequest $request)
+    public function store(Request $request)
     {
         //
     }
@@ -36,25 +27,44 @@ class DriverController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Driver $driver)
+    public function show(Request $request)
     {
-        //
-    }
+        $user = $request->user();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Driver $driver)
-    {
-        //
+        $user->load('driver');
+
+        return $user;
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateDriverRequest $request, Driver $driver)
+    public function update(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'year' => 'required|numeric|between:2000,2024',
+            'make' => 'required',
+            'model' => 'required',
+            'color' => 'required|alpha',
+            'license_plate' => 'required',
+        ]);
+
+        $user = $request->user();
+
+        $user->update($request->only('name'));
+
+        $user->driver()->updateOrCreate($request->only([
+            'year',
+            'make',
+            'model',
+            'color',
+            'license_plate',
+        ]));
+
+        $user->load('driver');
+
+        return $user;
     }
 
     /**

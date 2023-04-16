@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Events\TripAcceptedEvent;
+use App\Events\TripEndedEvent;
+use App\Events\TripLocationUpdatedEvent;
+use App\Events\TripStartedEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Trip;
 use Illuminate\Http\Request;
@@ -48,6 +52,8 @@ class TripController extends Controller
 
         $trip->load('driver.user');
 
+        event(new TripAcceptedEvent($trip, $request->user()));
+
         return $trip;
     }
 
@@ -57,6 +63,8 @@ class TripController extends Controller
 
         $trip->load('driver.user');
 
+        event(new TripStartedEvent($trip, $request->user()));
+
         return $trip;
     }
 
@@ -65,6 +73,7 @@ class TripController extends Controller
         $trip->update(['is_complete' => true]);
 
         $trip->load('driver.user');
+        event(new TripEndedEvent($trip, $request->user()));
 
         return $trip;
     }
@@ -76,6 +85,8 @@ class TripController extends Controller
         $trip->update(['driver_location' => $request->driver_location]);
 
         $trip->load('driver.user');
+
+        event(new TripLocationUpdatedEvent($trip, $request->user()));
 
         return $trip;
     }

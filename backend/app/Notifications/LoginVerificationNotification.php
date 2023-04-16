@@ -4,9 +4,8 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use NotificationChannels\Twilio\TwilioChannel;
 use NotificationChannels\Twilio\TwilioSmsMessage;
-use Illuminate\Notifications\Messages\MailMessage;
 
 class LoginVerificationNotification extends Notification
 {
@@ -32,7 +31,7 @@ class LoginVerificationNotification extends Notification
 
     public function toTwilio(object $notifiable)
     {
-        $otp = \rand(11111, 99999);
+        $otp = rand(11111, 99999);
 
         $notifiable->update(['otp' => $otp]);
 
